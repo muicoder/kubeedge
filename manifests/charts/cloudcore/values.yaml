@@ -8,7 +8,7 @@ cloudCore:
   hostNetWork: true
   image:
     repository: "kubeedge/cloudcore"
-    tag: "v1.15.1"
+    tag: "v1.15.3"
     pullPolicy: "IfNotPresent"
     pullSecrets: []
   securityContext:
@@ -33,17 +33,18 @@ cloudCore:
     requests:
       cpu: 100m
       memory: 512Mi
-  strategy: {}
+  strategy:
+    type: Recreate
   featureGates:
-    requireAuthorization: false
+    requireAuthorization: true
   modules:
     cloudHub:
       # Caution!: Leave this entry to empty will cause CloudCore to exit abnormally once KubeEdge is enabled.
       # At least a public IP Address or an IP which can be accessed by edge nodes must be provided!
       advertiseAddress:
-        - ""
+        - 172.31.255.254
       dnsNames:
-        - ""
+        - apiserver.cluster.local
       nodeLimit: "1000"
       websocket:
         port: 10000
@@ -57,11 +58,11 @@ cloudCore:
     cloudStream:
       enable: true
     dynamicController:
-      enable: false
+      enable: true
     router:
-      enable: false
+      enable: true
     taskManager:
-      enable: false
+      enable: true
   service:
     enable: true
     type: "NodePort"
@@ -78,7 +79,7 @@ iptablesManager:
   hostNetWork: true
   image:
     repository: "kubeedge/iptables-manager"
-    tag: "v1.12.0"
+    tag: "v1.15.3"
     pullPolicy: "IfNotPresent"
     pullSecrets: []
   securityContext:
@@ -108,10 +109,10 @@ iptablesManager:
       memory: 25Mi
 
 controllerManager:
-  enable: false
+  enable: true
   image:
     repository: "kubeedge/controller-manager"
-    tag: "v1.15.1"
+    tag: "v1.15.3"
     pullPolicy: "IfNotPresent"
     pullSecrets: []
   labels:

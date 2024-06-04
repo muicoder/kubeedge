@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: cloudcore
+  namespace: {{ .Release.Namespace }}
   {{- with .Values.cloudCore.labels }}
   labels: {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -26,8 +27,9 @@ data:
         {{- end}}
         nodeLimit: {{ .Values.cloudCore.modules.cloudHub.nodeLimit }}
         tlsCAFile: /etc/kubeedge/ca/rootCA.crt
-        tlsCertFile: /etc/kubeedge/certs/edge.crt
-        tlsPrivateKeyFile: /etc/kubeedge/certs/edge.key
+        tlsCAKeyFile: /etc/kubeedge/ca/rootCA.key
+        tlsCertFile: /etc/kubeedge/certs/cloudcore.crt
+        tlsPrivateKeyFile: /etc/kubeedge/certs/cloudcore.key
         unixsocket:
           address: unix:///var/lib/kubeedge/kubeedge.sock
           enable: true
@@ -48,6 +50,12 @@ data:
         enable: {{ .Values.cloudCore.modules.cloudStream.enable }}
         streamPort: 10003
         tunnelPort: 10004
+        tlsStreamCAFile: /etc/kubeedge/ca/rootCA.crt
+        tlsStreamCertFile: /etc/kubeedge/certs/cloudcore.crt
+        tlsStreamPrivateKeyFile: /etc/kubeedge/certs/cloudcore.key
+        tlsTunnelCAFile: /etc/kubeedge/ca/rootCA.crt
+        tlsTunnelCertFile: /etc/kubeedge/certs/cloudcore.crt
+        tlsTunnelPrivateKeyFile: /etc/kubeedge/certs/cloudcore.key
       dynamicController:
         enable: {{ .Values.cloudCore.modules.dynamicController.enable }}
       router:

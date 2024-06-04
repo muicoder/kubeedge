@@ -1,0 +1,59 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: edgeservice
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8081
+  selector:
+    k8s-app: edgeservice
+    kubeedge: edgeservice
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edgeservice
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: edgeservice
+      kubeedge: edgeservice
+  template:
+    metadata:
+      labels:
+        k8s-app: edgeservice
+        kubeedge: edgeservice
+    spec:
+      containers:
+        - name: edgeservice
+          image: kubesphere/edgeservice:v0.3.0
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 8081
+          command:
+            - edgeservice
+          env:
+            - name: REGION
+              value: "zh"
+            - name: VERSION
+              value: "v1.13.0"
+          imagePullPolicy: {{ .Values.cloudCore.image.pullPolicy }}
+      restartPolicy: Always
+      serviceAccount: cloudcore
+      {{- with .Values.cloudCore.affinity }}
+      affinity: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.cloudCore.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.cloudCore.nodeSelector }}
+      nodeSelector: {{ toYaml . | nindent 8 }}
+      {{- end }}

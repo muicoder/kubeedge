@@ -8,7 +8,9 @@ metadata:
   {{- with .Values.cloudCore.labels }}
   labels: {{- toYaml . | nindent 4 }}
   {{- end }}
+    service.edgemesh.kubeedge.io/service-proxy-name: ""
   name: cloudcore
+  namespace: {{ .Release.Namespace }}
 spec:
   {{- if and (eq .Values.cloudCore.service.type "NodePort") ( not .Values.cloudCore.hostNetWork) }}
   type: {{ .Values.cloudCore.service.type }}

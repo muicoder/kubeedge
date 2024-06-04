@@ -27,10 +27,15 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 Generate certificates for kubeedge cloudstream server
 */}}
 {{- define "cloudcore.gen-certs" -}}
-{{- $altNames := list ( printf "%s.%s" (include "cloudcore.name" .) .Release.Namespace ) ( printf "%s.%s.svc" (include "cloudcore.name" .) .Release.Namespace ) -}}
-{{- $ca := genCA "cloudcore-ca" 365 -}}
-{{- $cert := genSignedCert ( include "cloudcore.name" . ) nil $altNames 365 $ca -}}
-streamCA.crt: {{ $ca.Cert | b64enc }}
-stream.crt: {{ $cert.Cert | b64enc }}
-stream.key: {{ $cert.Key | b64enc }}
+{{- $CCaltNames := list ("cloudcore") ("apiserver.cluster.local") ( printf "%s.%s" (include "cloudcore.name" .) .Release.Namespace ) ( printf "%s.%s.svc" (include "cloudcore.name" .) .Release.Namespace ) -}}
+{{- $ECaltNames := list ("edgecore") ("apiserver.cluster.local") -}}
+{{- $ca := genCA "KubeEdge" 3650 -}}
+{{- $cc := genSignedCert "cloudcore" nil $CCaltNames 3650 $ca -}}
+{{- $ec := genSignedCert "edgecore" nil $ECaltNames 3650 $ca -}}
+rootCA.crt: {{ $ca.Cert | b64enc }}
+rootCA.key: {{ $ca.Key | b64enc }}
+cloudcore.crt: {{ $cc.Cert | b64enc }}
+cloudcore.key: {{ $cc.Key | b64enc }}
+edgecore.crt: {{ $ec.Cert | b64enc }}
+edgecore.key: {{ $ec.Key | b64enc }}
 {{- end -}}

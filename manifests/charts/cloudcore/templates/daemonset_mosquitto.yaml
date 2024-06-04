@@ -3,6 +3,7 @@ kind: DaemonSet
 apiVersion: apps/v1
 metadata:
   name: edge-eclipse-mosquitto
+  namespace: {{ .Release.Namespace }}
   {{- with .Values.mosquitto.labels }}
   labels: {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -26,7 +27,8 @@ spec:
       volumes:
         - name: mqtt-data-path
           hostPath:
-            path: /var/lib/kubeedge/mqtt/data
+            path: /data/ke.edged/mqtt/data
+            type: DirectoryOrCreate
       containers:
       - name: edge-eclipse-mosquitto
         image: {{ .Values.mosquitto.image.repository }}:{{ .Values.mosquitto.image.tag }}

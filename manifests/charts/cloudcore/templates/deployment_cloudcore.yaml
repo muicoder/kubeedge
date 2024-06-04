@@ -8,6 +8,7 @@ metadata:
   labels: {{- toYaml . | nindent 4 }}
   {{- end }}
   name: cloudcore
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.cloudCore.replicaCount }}
   selector:
@@ -85,15 +86,21 @@ spec:
         secret:
           secretName: cloudcore
           items:
-          - key: stream.crt
-            path: certs/stream.crt
-          - key: stream.key
-            path: certs/stream.key
-          - key: streamCA.crt
-            path: ca/streamCA.crt
+          - key: cloudcore.crt
+            path: certs/cloudcore.crt
+          - key: cloudcore.key
+            path: certs/cloudcore.key
+          - key: edgecore.crt
+            path: certs/edgecore.crt
+          - key: edgecore.key
+            path: certs/edgecore.key
+          - key: rootCA.crt
+            path: ca/rootCA.crt
+          - key: rootCA.key
+            path: ca/rootCA.key
       - name: sock
         hostPath:
-          path: /var/lib/kubeedge
+          path: /data/ke.edged
           type: DirectoryOrCreate
       - hostPath:
           path: /etc/localtime
